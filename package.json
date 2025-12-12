@@ -1,0 +1,14 @@
+{
+  "name": "junaidnizz-proxy",
+  "version": "1.0.0",
+  "main": "api/tempotp.js",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cheerio": "^1.0.0",
+    "querystring": "^0.2.1"
+  },
+  "scripts": {
+    "start": "node api/tempotp.js"
+  }
+}
