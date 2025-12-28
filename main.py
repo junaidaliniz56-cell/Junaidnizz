@@ -8,7 +8,7 @@ import time
 from telebot import types
 
 # ================= CONFIG =================
-BOT_TOKEN = "PUT_YOUR_BOT_TOKEN"
+BOT_TOKEN = "8546188939:AAGCchjT0fnBRmgeKVz87S1i7cIkhVOfZHI"
 ADMINS = [7011937754]
 
 DATA_FILE = "data.json"
