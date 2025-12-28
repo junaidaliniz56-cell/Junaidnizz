@@ -82,7 +82,7 @@ def show_countries(uid):
     kb = types.InlineKeyboardMarkup(row_width=2)
     for c in data["numbers"]:
         kb.add(types.InlineKeyboardButton(
-            f"{country_flag(c)} {c} ({len(data['numbers'][c])})",
+            f"🌍 {c} ({len(data['numbers'][c])})",
             callback_data=f"country|{c}"
         ))
     bot.send_message(uid, "🌍 Select Country", reply_markup=kb)
@@ -107,7 +107,7 @@ def pick_country(c):
     kb.add(types.InlineKeyboardButton("📜 View Past OTPs", callback_data="past"))
 
     bot.edit_message_text(
-        f"<b>📞 Your Number</b>\n\n<code>{num}</code>"
+        f"<b>📞 Your Number</b>\n\n<code>{num}</code>\n\n⏳ Waiting for OTP...",
         c.message.chat.id,
         c.message.message_id,
         reply_markup=kb
