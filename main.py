@@ -107,7 +107,7 @@ def pick_country(c):
     kb.add(types.InlineKeyboardButton("📜 View Past OTPs", callback_data="past"))
 
     bot.edit_message_text(
-        f"<b>{country_flag(country)} {country}</b>\n\n📞 <code>{num}</code>"
+        f"<b>📞 Your Number</b>\n\n<code>{num}</code>"
         c.message.chat.id,
         c.message.message_id,
         reply_markup=kb
