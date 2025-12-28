@@ -95,7 +95,7 @@ def pick(c):
     )
     kb.add(
         types.InlineKeyboardButton("📜 View Past OTPs", callback_data="past"),
-        types.InlineKeyboardButton("📢 OTP Group", url="https://t.me/YOURGROUP")
+        types.InlineKeyboardButton("📢 OTP Group", url="https://t.me/+Aqq6X6oRWCdhM2Q0")
     )
 
     bot.edit_message_text(
