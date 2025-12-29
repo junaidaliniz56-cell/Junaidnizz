@@ -10,7 +10,7 @@ import phonenumbers
 from phonenumbers import geocoder
 
 # ================= CONFIG =================
-BOT_TOKEN = "8546188939:AAGCchjT0fnBRmgeKVz87S1i7cIkhVOfZHI"
+BOT_TOKEN = "8546188939:AAGCchjT0fnBRmgeKVzVOfZHI"
 ADMINS = [7011937754]   # 👈 apni Telegram ID
 
 DATA_FILE = "data.json"
