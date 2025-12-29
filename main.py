@@ -8,7 +8,7 @@ import time
 from telebot import types
 
 # ================= CONFIG =================
-BOT_TOKEN = "8125227719:AAHIz2lrF7jMGea_qB_ccimMSRscvKarHj8"
+BOT_TOKEN = "8546188939:AAGCchjT0fnBRmgeKVz87S1i7cIkhVOfZHI"
 ADMINS = [7011937754]   # 👈 apni Telegram ID
 
 DATA_FILE = "data.json"
