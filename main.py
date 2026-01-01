@@ -197,7 +197,17 @@ def ch_link(m):
     save()
     STATE.pop(m.chat.id)
     bot.send_message(m.chat.id,"✅ Channel added")
-
+    
+@bot.message_handler(func=lambda m: m.text=="📢 Channels")
+def list_channels(m):
+    kb = types.InlineKeyboardMarkup()
+    for i,ch in enumerate(CHANNELS):
+        kb.add(types.InlineKeyboardButton(
+            f"{ch['name']} ❌",
+            callback_data=f"delch|{i}"
+        ))
+    bot.send_message(m.chat.id, "📢 Channel List", reply_markup=kb)
+    
 @bot.callback_query_handler(func=lambda c: c.data.startswith("delch|"))
 def del_ch(c):
     i = int(c.data.split("|")[1])
