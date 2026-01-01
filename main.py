@@ -198,10 +198,13 @@ def ch_link(m):
     STATE.pop(m.chat.id)
     bot.send_message(m.chat.id,"✅ Channel added")
 
-@bot.message_handler(func=lambda m: m.text=="📢 Channels")
-def ch_list(m):
-    txt="\n".join([c["name"] for c in data["channels"]]) or "No channels"
-    bot.send_message(m.chat.id,txt)
+@bot.callback_query_handler(func=lambda c: c.data.startswith("delch|"))
+def del_ch(c):
+    i = int(c.data.split("|")[1])
+    CHANNELS.pop(i)
+    save(CHANNEL_FILE, CHANNELS)
+    bot.edit_message_text("✅ Channel deleted", c.message.chat.id, c.message.message_id)
+    
 
 # ---------- SMS API ----------
 @bot.message_handler(func=lambda m: m.text=="➕ Add SMS API")
