@@ -17,7 +17,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 # --- Configuration ---
 BOT_NAME = "Junaid Niz OTP"
 USERNAME = "Junaidniz786"
-PASSWORD = "Junaidniz786"
+PASSWORD = "Junaid123"
 DB_FILE = "sms_database_np.db" 
 
 # --- LINK BUTTON CONFIGURATION ---
