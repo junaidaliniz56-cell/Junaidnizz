@@ -282,8 +282,7 @@ def format_message(record):
 <blockquote>🔐 OTP: <code>{otp}</code></blockquote>
 <blockquote>📩 Full Message:</blockquote>
 <pre>{clean}</pre>
-Powered by 💕 <b> Prime OTP </b> 💕 
-Support 💫 <strong> Adnan </strong> 💫
+Powered by Kumail Khan
 
 """
 
@@ -293,17 +292,17 @@ async def send_to_all_groups(msg):
 
         [
 
-            InlineKeyboardButton(text="☎️ Numbers", url="https://t.me/primezone3"),
+            InlineKeyboardButton(text="☎️ Numbers", url="https://t.me/PKNUMBER"),
 
-            InlineKeyboardButton(text="💬 Discussion",url="https://t.me/primezone_discussion")
+            InlineKeyboardButton(text="📱 Channel",url="https://t.me/PKNUMBER")
 
         ],
 
         [
 
-            InlineKeyboardButton(text="👨‍💻 Developer", url="https://t.me/NONEXPERTCODER"),
+            InlineKeyboardButton(text="👨‍💻 Developer", url="https://t.me/junaidniz786"),
 
-            InlineKeyboardButton(text="✉️ OTP", url="https://t.me/primeotpzone")
+            InlineKeyboardButton(text="🟢 Whatsapp", url="https://whatsapp.com/channel/0029Vaf1X3f6hENsP7dKm81z")
 
         ]
 
