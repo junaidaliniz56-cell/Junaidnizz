@@ -1,158 +1,124 @@
-import asyncio
 import json
 import re
+import time
 import requests
-from telegram import Bot
+from telegram import Bot, Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
-# =========================
+# ======================
 # CONFIG
-# =========================
+# ======================
 
 BOT_TOKEN = "8433897615:AAHE2px-1g5KvJTyMuGfdJoi_XfHx03Lcmw"
-
 CR_API = "http://147.135.212.197/crapi/st/viewstats"
 CR_TOKEN = "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw=="
 
 GROUP_IDS = [
-    -1003361941052,   # apna group ID
+    -1003361941052,  # apna group id
 ]
 
 OTP_FILE = "otp_store.json"
 
-bot = Bot(token=BOT_TOKEN)
-
-# =========================
+# ======================
 # UTILS
-# =========================
+# ======================
 
-def load_otp_store():
+def load_store():
     try:
         with open(OTP_FILE, "r") as f:
             return json.load(f)
     except:
         return {}
 
-def save_otp_store(data):
+def save_store(data):
     with open(OTP_FILE, "w") as f:
         json.dump(data, f)
 
 def extract_otp(text):
-    match = re.search(r"\b(\d{4,8})\b", text)
-    return match.group(1) if match else None
+    m = re.search(r"\b(\d{4,8})\b", text)
+    return m.group(1) if m else None
 
-def fetch_cr_data():
-    try:
-        r = requests.get(
-            CR_API,
-            params={"token": CR_TOKEN},
-            timeout=10
+# ======================
+# COMMANDS
+# ======================
+
+def start(update: Update, context: CallbackContext):
+    update.message.reply_text("✅ CR Bot Running")
+
+def otpfor(update: Update, context: CallbackContext):
+    if not context.args:
+        update.message.reply_text("Usage: /otpfor <number>")
+        return
+
+    number = context.args[0]
+    store = load_store()
+
+    if number in store:
+        update.message.reply_text(
+            f"🔐 OTP for {number}: {store[number]}"
         )
-        if r.status_code == 200:
-            return r.json()
-    except:
-        return None
+    else:
+        update.message.reply_text("❌ No OTP found")
 
-async def send_to_groups(msg):
-    for gid in GROUP_IDS:
-        try:
-            await bot.send_message(gid, msg)
-        except Exception as e:
-            print("Send error:", e)
-
-# =========================
+# ======================
 # CR WORKER
-# =========================
+# ======================
 
-async def cr_worker():
+def cr_worker(bot: Bot):
     print("🚀 CR Worker Started")
-    last_unique = None
-
-    while True:
-        data = fetch_cr_data()
-
-        if isinstance(data, dict):
-            number = str(data.get("num") or data.get("number") or "")
-            message = str(data.get("msg") or data.get("message") or "")
-            service = str(data.get("service") or "CR")
-
-            if number and message:
-                unique = number + message
-
-                if unique != last_unique:
-                    last_unique = unique
-
-                    otp = extract_otp(message)
-                    if otp:
-                        store = load_otp_store()
-                        store[number] = otp
-                        save_otp_store(store)
-
-                    text = (
-                        f"📡 <b>{service}</b>\n"
-                        f"📞 <code>{number}</code>\n"
-                        f"💬 {message}"
-                    )
-
-                    await send_to_groups(text)
-                    print("Sent:", number)
-
-        await asyncio.sleep(3)
-
-# =========================
-# COMMAND LISTENER
-# =========================
-
-async def command_listener():
-    print("⌨️ Command Listener Started")
-    offset = 0
+    last = None
 
     while True:
         try:
-            updates = await bot.get_updates(offset=offset, timeout=20)
+            r = requests.get(
+                CR_API,
+                params={"token": CR_TOKEN},
+                timeout=10
+            )
 
-            for update in updates:
-                offset = update.update_id + 1
+            if r.status_code == 200:
+                data = r.json()
 
-                if update.message and update.message.text:
-                    chat_id = update.message.chat.id
-                    text = update.message.text.strip()
+                number = str(data.get("num") or data.get("number") or "")
+                message = str(data.get("msg") or data.get("message") or "")
 
-                    if text.startswith("/otpfor"):
-                        parts = text.split()
+                if number and message:
+                    uniq = number + message
+                    if uniq != last:
+                        last = uniq
 
-                        if len(parts) < 2:
-                            await bot.send_message(chat_id, "Usage: /otpfor <number>")
-                            continue
+                        otp = extract_otp(message)
+                        if otp:
+                            store = load_store()
+                            store[number] = otp
+                            save_store(store)
 
-                        number = parts[1]
-                        store = load_otp_store()
+                        text = f"📞 {number}\n💬 {message}"
+                        for gid in GROUP_IDS:
+                            bot.send_message(gid, text)
 
-                        if number in store:
-                            await bot.send_message(
-                                chat_id,
-                                f"🔐 OTP for {number}: <code>{store[number]}</code>",
-                                parse_mode="HTML"
-                            )
-                        else:
-                            await bot.send_message(
-                                chat_id,
-                                "❌ No OTP found for this number"
-                            )
+                        print("Sent:", number)
 
         except Exception as e:
-            print("COMMAND ERROR:", e)
+            print("CR ERROR:", e)
 
-        await asyncio.sleep(1)
+        time.sleep(3)
 
-# =========================
+# ======================
 # MAIN
-# =========================
+# ======================
 
-async def main():
-    await asyncio.gather(
-        cr_worker(),
-        command_listener()
-    )
+def main():
+    updater = Updater(BOT_TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("otpfor", otpfor))
+
+    updater.start_polling()
+    print("🤖 Bot Polling Started")
+
+    cr_worker(updater.bot)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
