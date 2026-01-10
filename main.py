@@ -92,7 +92,7 @@ def pick_country(c):
         kb = types.InlineKeyboardMarkup()
         kb.add(types.InlineKeyboardButton("🔄 Change Number", callback_data=f"get|{country}"))
         kb.add(types.InlineKeyboardButton("🌍 Change Country", callback_data="change"))
-        kb.add(types.InlineKeyboardButton("📱 OTP Group", url="https://t.me/+Aqq6X6oRWCdhM2Q0"))
+        kb.add(types.InlineKeyboardButton("📱 OTP Group", url="https://t.me/DARKXDISCUSS"))
 
         bot.edit_message_text(
             f"🌍 <b>Your Number ({country})</b>\n\n📞 <code>{phone}</code>\n\n⏳ Waiting for OTP...",
