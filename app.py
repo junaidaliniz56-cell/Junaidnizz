@@ -40,11 +40,11 @@ API_PANELS = {
 
     },
 
-    "mait": {
+    "cr": {
 
-        "url": "http://51.77.216.195/crapi/mait/viewstats",
+        "url": "http://147.135.212.197/crapi/st/viewstats",
 
-        "token": "SlRXRzRSQkV6dZGKRmaOV31ml3xKbolJU1CSYXVwinRpcoBVhV9v",
+        "token": "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw==&records=10",
 
         "records": 20
 
