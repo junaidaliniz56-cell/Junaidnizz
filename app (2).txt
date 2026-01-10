@@ -14,7 +14,7 @@ import json
 
 import os
 
-BOT_TOKEN = "8437826394:AAEnIx5XUlucZy-gd_UusLlVyJ-SIg-f4FM"
+BOT_TOKEN = "8437087674:AAEEBJDfEkxl0MbA__lsSF4A7qc7UpwzGU4"
 
 bot = Bot(token=BOT_TOKEN)
 
