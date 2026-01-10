@@ -16,8 +16,7 @@ bot = Bot(token=BOT_TOKEN)
 GROUP_IDS = [-1003361941052]
 OTP_FILE = "otp_store.json"
 
-# Dono panels ko handle karne ke liye settings
-# Panel 2 (cr2) mein humne aapki direct link set ki hai
+# API CONFIG: Panel 2 (cr2) aapki direct link ke parameters use karega
 API_CONFIGS = {
     "cr1": {
         "url": "http://51.77.216.195/crapi/dgroup/viewstats",
@@ -30,7 +29,7 @@ API_CONFIGS = {
         "url": "http://147.135.212.197/crapi/st/viewstats",
         "params": {
             "token": "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw==",
-            "dt1": datetime.now().strftime("%Y-%m-%d"), # Auto today's date
+            "dt1": datetime.now().strftime("%Y-%m-%d"), # Auto updates date
             "records": 20
         }
     }
@@ -61,17 +60,19 @@ def get_country_info(number_str):
     except: return "Unknown", "🌍"
 
 # ============================
-# FETCH LOGIC (Supports both formats)
+# FETCH LOGIC (Fixed for List Error)
 # ============================
 def fetch_data(panel_key):
     cfg = API_CONFIGS[panel_key]
     try:
         response = requests.get(cfg["url"], params=cfg["params"], timeout=15)
+        if response.status_code != 200: return None
         data = response.json()
         
-        # Checking for List or Dictionary response
+        # LOGS FIX: Agar data list hai (cr2 jaisa) toh data[0] uthao
         if isinstance(data, list) and len(data) > 0:
             latest = data[0]
+        # Agar data dictionary hai (cr1 jaisa)
         elif isinstance(data, dict) and data.get("status") == "success" and data.get("data"):
             latest = data["data"][0]
         else:
@@ -83,7 +84,8 @@ def fetch_data(panel_key):
             "service": latest.get("cli", "N/A"),
             "message": latest.get("message", "N/A")
         }
-    except:
+    except Exception as e:
+        print(f"Error on {panel_key}: {e}")
         return None
 
 # ============================
@@ -100,7 +102,6 @@ async def panel_worker(panel_key):
                 last_id = current_id
                 
                 otp = extract_otp(data["message"])
-                # Save OTP in store
                 store = load_otp_store()
                 store[str(data['number'])] = otp
                 save_otp_store(store)
@@ -126,10 +127,10 @@ async def panel_worker(panel_key):
                         await bot.send_message(chat_id=gid, text=msg, parse_mode="HTML")
                     except: pass
         
-        await asyncio.sleep(5) # Delay to avoid spamming the API
+        await asyncio.sleep(5)
 
 async def main():
-    # Dono workers ko ek saath chalana
+    # Dono workers ko parallel chalana
     await asyncio.gather(
         panel_worker("cr1"),
         panel_worker("cr2")
@@ -139,5 +140,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("Bot Stopped.")
-            
+        pass
+    
