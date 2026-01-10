@@ -10,7 +10,7 @@ from telegram.error import Conflict
 # ======================
 # TELEGRAM SETTINGS
 # ======================
-BOT_TOKEN = "8437087674:AAEEBJDfEkxl0MbA__lsSF4A7qc7UpwzGU4"
+BOT_TOKEN = "8563561256:AAGJTHQQmZUYL4nmbqh28x-gy7PJMGqIZxw"
 bot = Bot(token=BOT_TOKEN)
 
 GROUP_IDS = [-1003361941052]   # apna group id
