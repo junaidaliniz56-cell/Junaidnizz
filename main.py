@@ -4,22 +4,26 @@ import re
 import json
 import os
 from datetime import datetime, timedelta
-from telegram import Bot
+from telegram import Bot, Update
+from telegram.error import Conflict
 
 # ======================
 # TELEGRAM SETTINGS
 # ======================
 BOT_TOKEN = "8437087674:AAEEBJDfEkxl0MbA__lsSF4A7qc7UpwzGU4"
-bot = Bot(BOT_TOKEN)
+bot = Bot(token=BOT_TOKEN)
 
-GROUP_IDS = [-1003361941052]
+GROUP_IDS = [-1003361941052]   # apna group id
 OTP_FILE = "otp_store.json"
 
 # ======================
-# CR PANEL CONFIG
+# PAKISTAN DATE (UTC+5)
 # ======================
 PK_DATE = (datetime.utcnow() + timedelta(hours=5)).strftime("%Y-%m-%d")
 
+# ======================
+# CR API CONFIG
+# ======================
 CR_API = {
     "url": "http://147.135.212.197/crapi/st/viewstats",
     "params": {
@@ -42,12 +46,12 @@ def save_otp_store(data):
     with open(OTP_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
-def extract_otp(msg):
-    m = re.search(r"\b\d{4,6}\b", str(msg))
+def extract_otp(text):
+    m = re.search(r"\b\d{4,6}\b", str(text))
     return m.group(0) if m else None
 
 # ======================
-# FETCH FROM CR (FIXED)
+# FETCH CR DATA (SAFE)
 # ======================
 def fetch_cr_latest():
     try:
@@ -57,12 +61,17 @@ def fetch_cr_latest():
 
         data = r.json()
 
-        # CR response is [[{...}]]
-        if isinstance(data, list) and data and isinstance(data[0], list) and data[0]:
+        # Expected format: [[{...}]]
+        if (
+            isinstance(data, list)
+            and data
+            and isinstance(data[0], list)
+            and data[0]
+            and isinstance(data[0][0], dict)
+        ):
             return data[0][0]
 
         return None
-
     except Exception as e:
         print("CR FETCH ERROR:", e)
         return None
@@ -77,82 +86,92 @@ async def cr_worker():
     while True:
         data = fetch_cr_latest()
 
-        if data:
-            unique = str(data.get("num")) + str(data.get("message"))
+        if isinstance(data, dict):
+            num = str(data.get("num", ""))
+            msg = str(data.get("message", ""))
+            dt = str(data.get("dt", "N/A"))
 
+            unique = num + msg
             if unique != last_unique:
                 last_unique = unique
 
-                number = str(data.get("num"))
-                message = data.get("message", "")
-                otp = extract_otp(message)
-
+                otp = extract_otp(msg)
                 if otp:
                     store = load_otp_store()
-                    store[number] = otp
+                    store[num] = otp
                     save_otp_store(store)
 
                 text = (
                     f"🟢 <b>CR OTP ALERT</b>\n"
                     f"━━━━━━━━━━━━━━━━━━\n"
-                    f"<b>Number:</b> <code>{number}</code>\n"
-                    f"<b>Time:</b> {data.get('dt','N/A')}\n"
+                    f"<b>Number:</b> <code>{num}</code>\n"
+                    f"<b>Time:</b> {dt}\n"
                     f"<b>OTP:</b> <code>{otp or 'N/A'}</code>\n\n"
-                    f"<pre>{message}</pre>\n"
+                    f"<pre>{msg}</pre>\n"
                     f"━━━━━━━━━━━━━━━━━━\n"
-                    f"🇵🇰 Pakistan Date: {PK_DATE}"
+                    f"🇵🇰 Date: {PK_DATE}"
                 )
 
                 for gid in GROUP_IDS:
                     try:
                         await bot.send_message(gid, text, parse_mode="HTML")
                     except Exception as e:
-                        print("TG ERROR:", e)
+                        print("TG SEND ERROR:", e)
 
         await asyncio.sleep(5)
 
 # ======================
-# /otpfor COMMAND
+# COMMAND LISTENER (/otpfor)
 # ======================
 async def command_listener():
-    offset = 0
     print("⌨️ Command Listener Started")
+    offset = 0
 
     while True:
-        updates = await bot.get_updates(offset=offset, timeout=10)
+        try:
+            updates = await bot.get_updates(offset=offset, timeout=10)
 
-        for u in updates:
-            offset = u.update_id + 1
+            for u in updates:
+                offset = u.update_id + 1
 
-            if not u.message or not u.message.text:
-                continue
-
-            text = u.message.text.strip()
-            chat_id = u.message.chat_id
-
-            if text.startswith("/otpfor"):
-                parts = text.split()
-                if len(parts) < 2:
-                    await bot.send_message(chat_id, "⚠️ Usage: /otpfor <number>")
+                if not u.message or not u.message.text:
                     continue
 
-                number = parts[1].replace("+", "")
-                store = load_otp_store()
+                text = u.message.text.strip()
+                chat_id = u.message.chat_id
 
-                if number in store:
-                    await bot.send_message(
-                        chat_id,
-                        f"🔐 <b>Saved OTP:</b> <code>{store[number]}</code>",
-                        parse_mode="HTML"
-                    )
-                else:
-                    await bot.send_message(
-                        chat_id,
-                        "❌ No OTP found for this number",
-                        parse_mode="HTML"
-                    )
+                if text.startswith("/otpfor"):
+                    parts = text.split()
+                    if len(parts) < 2:
+                        await bot.send_message(
+                            chat_id,
+                            "⚠️ Usage: /otpfor <number>"
+                        )
+                        continue
 
-        await asyncio.sleep(1)
+                    number = parts[1].replace("+", "")
+                    store = load_otp_store()
+
+                    if number in store:
+                        await bot.send_message(
+                            chat_id,
+                            f"🔐 <b>Saved OTP:</b> <code>{store[number]}</code>",
+                            parse_mode="HTML"
+                        )
+                    else:
+                        await bot.send_message(
+                            chat_id,
+                            "❌ No OTP found for this number",
+                            parse_mode="HTML"
+                        )
+
+        except Conflict:
+            print("⚠️ Telegram Conflict: another instance running")
+            await asyncio.sleep(10)
+
+        except Exception as e:
+            print("COMMAND ERROR:", e)
+            await asyncio.sleep(5)
 
 # ======================
 # MAIN
