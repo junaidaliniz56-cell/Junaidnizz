@@ -1,124 +1,60 @@
-import json
-import re
-import time
 import requests
-from telegram import Bot, Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
-
-# ======================
-# CONFIG
-# ======================
+from telegram.ext import Updater, CommandHandler
 
 BOT_TOKEN = "8433897615:AAHE2px-1g5KvJTyMuGfdJoi_XfHx03Lcmw"
-CR_API = "http://147.135.212.197/crapi/st/viewstats"
-CR_TOKEN = "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw=="
+GROUP_ID = -1003361941052   # 👈 yahan apna group ID lagao
 
-GROUP_IDS = [
-    -1003361941052,  # apna group id
-]
+API_URL = (
+    "http://147.135.212.197/crapi/st/viewstats"
+    "?token=RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw=="
+    "&dt1=2026-01-10"
+)
 
-OTP_FILE = "otp_store.json"
+def fetch_cr():
+    r = requests.get(API_URL, timeout=10)
+    data = r.json()
 
-# ======================
-# UTILS
-# ======================
+    if isinstance(data, list) and data:
+        data = data[0]
 
-def load_store():
-    try:
-        with open(OTP_FILE, "r") as f:
-            return json.load(f)
-    except:
-        return {}
+    number = str(data.get("num", ""))
+    msg = str(data.get("msg", ""))
+    dt = str(data.get("dt", ""))
 
-def save_store(data):
-    with open(OTP_FILE, "w") as f:
-        json.dump(data, f)
+    if not number.startswith("92"):
+        return None
 
-def extract_otp(text):
-    m = re.search(r"\b(\d{4,8})\b", text)
-    return m.group(1) if m else None
+    return number, msg, dt
 
-# ======================
-# COMMANDS
-# ======================
 
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text("✅ CR Bot Running")
-
-def otpfor(update: Update, context: CallbackContext):
-    if not context.args:
-        update.message.reply_text("Usage: /otpfor <number>")
+def cr(update, context):
+    result = fetch_cr()
+    if not result:
         return
 
-    number = context.args[0]
-    store = load_store()
+    number, msg, dt = result
 
-    if number in store:
-        update.message.reply_text(
-            f"🔐 OTP for {number}: {store[number]}"
-        )
-    else:
-        update.message.reply_text("❌ No OTP found")
+    text = (
+        "📩 *CR OTP*\n\n"
+        f"📱 `{number}`\n"
+        f"🕒 `{dt}`\n\n"
+        f"{msg}"
+    )
 
-# ======================
-# CR WORKER
-# ======================
+    # 👇 DIRECT GROUP POST
+    context.bot.send_message(
+        chat_id=GROUP_ID,
+        text=text,
+        parse_mode="Markdown"
+    )
 
-def cr_worker(bot: Bot):
-    print("🚀 CR Worker Started")
-    last = None
-
-    while True:
-        try:
-            r = requests.get(
-                CR_API,
-                params={"token": CR_TOKEN},
-                timeout=10
-            )
-
-            if r.status_code == 200:
-                data = r.json()
-
-                number = str(data.get("num") or data.get("number") or "")
-                message = str(data.get("msg") or data.get("message") or "")
-
-                if number and message:
-                    uniq = number + message
-                    if uniq != last:
-                        last = uniq
-
-                        otp = extract_otp(message)
-                        if otp:
-                            store = load_store()
-                            store[number] = otp
-                            save_store(store)
-
-                        text = f"📞 {number}\n💬 {message}"
-                        for gid in GROUP_IDS:
-                            bot.send_message(gid, text)
-
-                        print("Sent:", number)
-
-        except Exception as e:
-            print("CR ERROR:", e)
-
-        time.sleep(3)
-
-# ======================
-# MAIN
-# ======================
 
 def main():
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
-
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("otpfor", otpfor))
-
+    dp.add_handler(CommandHandler("cr", cr))
     updater.start_polling()
-    print("🤖 Bot Polling Started")
+    updater.idle()
 
-    cr_worker(updater.bot)
 
-if __name__ == "__main__":
-    main()
+main()
