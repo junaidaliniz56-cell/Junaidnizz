@@ -16,7 +16,7 @@ bot = Bot(token=BOT_TOKEN)
 GROUP_IDS = [-1003361941052]
 OTP_FILE = "otp_store.json"
 
-# API CONFIG: Panel 2 (cr2) aapki direct link ke parameters use karega
+# API CONFIG: Is tarah likhne se syntax error nahi aayega
 API_CONFIGS = {
     "cr1": {
         "url": "http://51.77.216.195/crapi/dgroup/viewstats",
@@ -26,10 +26,11 @@ API_CONFIGS = {
         }
     },
     "cr2": {
+        # Yahan humne base URL alag rakha hai aur params alag
         "url": "http://147.135.212.197/crapi/st/viewstats",
         "params": {
             "token": "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw==",
-            "dt1": datetime.now().strftime("%Y-%m-%d"), # Auto updates date
+            "dt1": datetime.now().strftime("%Y-%m-%d"), # Aaj ki date auto lega
             "records": 20
         }
     }
@@ -65,14 +66,14 @@ def get_country_info(number_str):
 def fetch_data(panel_key):
     cfg = API_CONFIGS[panel_key]
     try:
+        # requests.get khud hi URL ke peeche ?token=...&dt1=... laga dega
         response = requests.get(cfg["url"], params=cfg["params"], timeout=15)
         if response.status_code != 200: return None
         data = response.json()
         
-        # LOGS FIX: Agar data list hai (cr2 jaisa) toh data[0] uthao
+        # FIX: Check if list or dict
         if isinstance(data, list) and len(data) > 0:
             latest = data[0]
-        # Agar data dictionary hai (cr1 jaisa)
         elif isinstance(data, dict) and data.get("status") == "success" and data.get("data"):
             latest = data["data"][0]
         else:
@@ -130,7 +131,6 @@ async def panel_worker(panel_key):
         await asyncio.sleep(5)
 
 async def main():
-    # Dono workers ko parallel chalana
     await asyncio.gather(
         panel_worker("cr1"),
         panel_worker("cr2")
@@ -141,4 +141,3 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         pass
-    
