@@ -18,7 +18,7 @@ BOT_TOKEN = "8437087674:AAEEBJDfEkxl0MbA__lsSF4A7qc7UpwzGU4"
 
 bot = Bot(token=BOT_TOKEN)
 
-GROUP_IDS = [-1002836673794]
+GROUP_IDS = [-1003361941052]
 
 OTP_FILE = "otp_store.json"
 
@@ -254,8 +254,7 @@ def format_message(record):
 <b>Full Message:</b> 📝
 <pre>{clean}</pre>
 <code>{border}</code>
-❤️ Powered by <b>Prime OTP</b> ❤️
-👥 Support: <strong>Adnan</strong> 👥
+ Powered by Junaid Niz 💗 
 
 """
 
@@ -271,17 +270,17 @@ async def send_to_all_groups(msg):
 
         [
 
-            InlineKeyboardButton("🧮 Numbers", url="https://t.me/primezone3"),
+            InlineKeyboardButton("🧮 Numbers", url="https://t.me/+c4VCxBCT3-QzZGFk"),
 
-            InlineKeyboardButton("💌 Discussion", url="https://t.me/primezone_discussion")
+            InlineKeyboardButton("📱 Channel", url="https://t.me/jndtech1")
 
         ],
 
         [
 
-            InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/NONEXPERTCODER"),
+            InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/junaidniz786"),
 
-            InlineKeyboardButton("✅ OTP", url="https://t.me/primeotpzone")
+            InlineKeyboardButton("✅ YouTube", url="https://youtube.com/@junaidniz786?si=tQFOJbg7aDL5XpG7")
 
         ]
 
