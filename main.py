@@ -9,14 +9,14 @@ import os
 from datetime import datetime
 
 # ============================
-# CONFIGURATION
+# SETTINGS
 # ============================
 BOT_TOKEN = "8437087674:AAEEBJDfEkxl0MbA__lsSF4A7qc7UpwzGU4"
 bot = Bot(token=BOT_TOKEN)
 GROUP_IDS = [-1003361941052]
 OTP_FILE = "otp_store.json"
 
-# API CONFIG: Is tarah likhne se syntax error nahi aayega
+# API Panels: Panel 2 (cr2) aapki exact link ke params use karega
 API_CONFIGS = {
     "cr1": {
         "url": "http://51.77.216.195/crapi/dgroup/viewstats",
@@ -26,11 +26,10 @@ API_CONFIGS = {
         }
     },
     "cr2": {
-        # Yahan humne base URL alag rakha hai aur params alag
         "url": "http://147.135.212.197/crapi/st/viewstats",
         "params": {
             "token": "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw==",
-            "dt1": datetime.now().strftime("%Y-%m-%d"), # Aaj ki date auto lega
+            "dt1": datetime.now().strftime("%Y-%m-%d"), # Har roz ki date khud uthayega
             "records": 20
         }
     }
@@ -61,19 +60,19 @@ def get_country_info(number_str):
     except: return "Unknown", "🌍"
 
 # ============================
-# FETCH LOGIC (Fixed for List Error)
+# FETCH DATA (Logs Error Fix)
 # ============================
 def fetch_data(panel_key):
     cfg = API_CONFIGS[panel_key]
     try:
-        # requests.get khud hi URL ke peeche ?token=...&dt1=... laga dega
         response = requests.get(cfg["url"], params=cfg["params"], timeout=15)
         if response.status_code != 200: return None
         data = response.json()
         
-        # FIX: Check if list or dict
+        # LOGS FIX: Agar data list hai [ ], toh pehla element data[0] uthao
         if isinstance(data, list) and len(data) > 0:
             latest = data[0]
+        # Agar data dictionary hai { }, toh data['data'][0] uthao
         elif isinstance(data, dict) and data.get("status") == "success" and data.get("data"):
             latest = data["data"][0]
         else:
@@ -90,7 +89,7 @@ def fetch_data(panel_key):
         return None
 
 # ============================
-# WORKER LOOP
+# WORKER
 # ============================
 async def panel_worker(panel_key):
     print(f"🚀 Worker {panel_key} started...")
@@ -126,11 +125,13 @@ async def panel_worker(panel_key):
                 for gid in GROUP_IDS:
                     try:
                         await bot.send_message(chat_id=gid, text=msg, parse_mode="HTML")
-                    except: pass
+                    except Exception as e:
+                        print(f"Telegram Error: {e}")
         
         await asyncio.sleep(5)
 
 async def main():
+    # Dono panels ko ek saath chalana
     await asyncio.gather(
         panel_worker("cr1"),
         panel_worker("cr2")
@@ -141,3 +142,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         pass
+            
