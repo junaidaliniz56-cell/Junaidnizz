@@ -8,7 +8,7 @@ from telegram import Bot
 # CONFIG
 # =========================
 
-BOT_TOKEN = "8563561256:AAEt3cs1w2jSw1OwfHbUrInNg4N1q3BvnH0"
+BOT_TOKEN = "8433897615:AAHE2px-1g5KvJTyMuGfdJoi_XfHx03Lcmw"
 
 CR_API = "http://147.135.212.197/crapi/st/viewstats"
 CR_TOKEN = "RVdWRElBUzRGcW9WeneNcmd2cGV9ZJd8e29PVlyPcFxeamxSgWVXfw=="
