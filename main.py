@@ -39,8 +39,9 @@ def check_join(uid):
 def start(m):
     if not check_join(m.chat.id):
         kb = types.InlineKeyboardMarkup()
-        kb.add(types.InlineKeyboardButton("Join", url="https://t.me/+i8Q1z0Zq9_g3ZDI9"))
+        kb.add(types.InlineKeyboardButton("Join", url="https://t.me/xHunterXSigma"))
         kb.add(types.InlineKeyboardButton("Join", url="https://t.me/Junaidniz"))
+        kb.add(types.InlineKeyboardButton("Join", url="https://t.me/xBlackHat"))
         kb.add(types.InlineKeyboardButton(f"Join", url="https://t.me/+YbqOLJJmDzszYzBl"))
         kb.add(types.InlineKeyboardButton(f"Join", url="https://t.me/X278D"))
         kb.add(types.InlineKeyboardButton(f"Join", url="https://t.me/DARKXDISCUSS"))
