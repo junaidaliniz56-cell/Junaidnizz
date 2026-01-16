@@ -37,7 +37,7 @@ DASHBOARD_CONFIGS = [
         "login_page": "/ints/login",
         "login_post": "/ints/signin",
         "username": "Junaidniz786",
-        "password": "Junaidniz786",
+        "password": "Junaid123",
         "session": requests.Session(),
         "logged": False
     }
