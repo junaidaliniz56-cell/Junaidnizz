@@ -1,4 +1,5 @@
-aiohttp==3.9.1
-aiogram==2.25.1
-requests==2.31.0
-phonenumbers==8.13.29
+aiogram
+aiohttp
+requests
+phonenumbers
+
