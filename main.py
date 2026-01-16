@@ -32,7 +32,7 @@ DASHBOARD_CONFIGS = [
     },
     {
         "name": "BACKUP",
-        "base": "http://51.89.99.105/NumberPanel",
+        "base": "http://139.99.63.204",
         "ajax": "/ints/agent/res/data_smscdr.php",
         "login_page": "/ints/login",
         "login_post": "/ints/signin",
