@@ -1,6 +1,4 @@
 aiogram
 requests
 phonenumbers
-aiohttp
 beautifulsoup4
-
