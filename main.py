@@ -7,6 +7,8 @@ import phonenumbers
 from phonenumbers import geocoder
 from aiogram import Bot
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+# Ye nayi line zaroori hai aiogram v3 ke liye
+from aiogram.client.default import DefaultBotProperties 
 
 # =====================================================
 # BOT CONFIG
