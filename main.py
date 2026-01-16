@@ -16,7 +16,7 @@ from aiogram.client.default import DefaultBotProperties
 # Apna real token yahan likhein
 BOT_TOKEN = "8495469799:AAEeO1X4uIgVBBH1A-NQTOLbVOoLjOB0Z1A" 
 GROUP_IDS = [
-    _1003361941052,
+    -1003361941052,
 ]
 
 # Updated initialization (Error fix yahan hai)
