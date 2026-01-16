@@ -7,18 +7,23 @@ import phonenumbers
 from phonenumbers import geocoder
 from aiogram import Bot
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-# Ye nayi line zaroori hai aiogram v3 ke liye
-from aiogram.client.default import DefaultBotProperties 
+# Naya import jo error fix karega
+from aiogram.client.default import DefaultBotProperties
 
 # =====================================================
 # BOT CONFIG
 # =====================================================
-BOT_TOKEN = "8495469799:AAEeO1X4uIgVBBH1A-NQTOLbVOoLjOB0Z1A"
+# Apna real token yahan likhein
+BOT_TOKEN = "8495469799:AAEeO1X4uIgVBBH1A-NQTOLbVOoLjOB0Z1A" 
 GROUP_IDS = [
-    -1003361941052,
+    _1003361941052,
 ]
 
-bot = Bot(token=BOT_TOKEN, parse_mode="HTML")
+# Updated initialization (Error fix yahan hai)
+bot = Bot(
+    token=BOT_TOKEN, 
+    default=DefaultBotProperties(parse_mode="HTML")
+)
 
 # =====================================================
 # DASHBOARD CONFIG (LOGIN BASED)
@@ -41,8 +46,8 @@ DASHBOARD_CONFIGS = [
         "ajax": "/ints/agent/res/data_smscdr.php",
         "login_page": "/ints/login",
         "login_post": "/ints/signin",
-        "username": "Junaidniz786",
-        "password": "Junaidniz786",
+        "username": "BODYELYOUTUBER",
+        "password": "BODY EL YOUTUBER",
         "session": requests.Session(),
         "logged": False
     }
@@ -61,24 +66,18 @@ def login_dashboard(dash):
     try:
         s = dash["session"]
         s.headers.update(COMMON_HEADERS)
-
         s.get(dash["base"] + dash["login_page"], timeout=15)
-
         payload = {
             "username": dash["username"],
             "password": dash["password"]
         }
-
         r = s.post(dash["base"] + dash["login_post"], data=payload, timeout=15)
-
         if r.status_code == 200:
             dash["logged"] = True
             print(f"[LOGIN OK] {dash['name']}")
             return True
-
     except Exception as e:
         print(f"[LOGIN ERROR] {dash['name']} {e}")
-
     dash["logged"] = False
     return False
 
@@ -90,16 +89,13 @@ def fetch_latest_otp(dash):
         if not dash["logged"]:
             if not login_dashboard(dash):
                 return None
-
         url = dash["base"] + dash["ajax"]
         r = dash["session"].get(url, timeout=20)
         data = r.json()
-
         records = data.get("aaData", [])
         valid = [x for x in records if isinstance(x[0], str) and ":" in x[0]]
         if not valid:
             return None
-
         latest = valid[0]
         return {
             "time": latest[0],
@@ -107,7 +103,6 @@ def fetch_latest_otp(dash):
             "service": str(latest[3]),
             "message": str(latest[4]),
         }
-
     except Exception as e:
         print(f"[FETCH ERROR] {dash['name']} {e}")
         dash["logged"] = False
@@ -136,23 +131,19 @@ def mask_number(num):
         return num
 
 # =====================================================
-# COUNTRY + FLAG (NO OUT-OF-FLAG)
+# COUNTRY + FLAG
 # =====================================================
 def get_country_info(number):
     try:
         number = "+" + number.lstrip("+")
         parsed = phonenumbers.parse(number, None)
-
         if not phonenumbers.is_valid_number(parsed):
             return "Unknown", "🌍"
-
         country = geocoder.description_for_number(parsed, "en")
         region = phonenumbers.region_code_for_number(parsed)
-
         base = 127397
         flag = chr(base + ord(region[0])) + chr(base + ord(region[1])) if region else "🌍"
         return country or "Unknown", flag
-
     except:
         return "Unknown", "🌍"
 
@@ -163,7 +154,6 @@ def format_message(r):
     otp = extract_otp(r["message"])
     masked = mask_number(r["number"])
     country, flag = get_country_info(r["number"])
-
     service_icon = "📱"
     s = r["service"].lower()
     if "whatsapp" in s:
@@ -198,7 +188,6 @@ async def send_to_groups(text):
             InlineKeyboardButton(text="☎️ Numbers", url="https://t.me/+c4VCxBCT3-QzZGFk")
         ]
     ])
-
     for gid in GROUP_IDS:
         try:
             await bot.send_message(gid, text, reply_markup=keyboard)
@@ -221,7 +210,13 @@ async def dashboard_worker(dash):
 
 async def main():
     print("OTP Bot started...")
-    await asyncio.gather(*(dashboard_worker(d) for d in DASHBOARD_CONFIGS))
+    # Bot session start karne ke liye
+    async with bot:
+        await asyncio.gather(*(dashboard_worker(d) for d in DASHBOARD_CONFIGS))
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        print("Bot stopped.")
+        
