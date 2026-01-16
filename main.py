@@ -32,12 +32,12 @@ DASHBOARD_CONFIGS = [
     },
     {
         "name": "BACKUP",
-        "base": "http://109.236.84.81",
+        "base": "http://51.89.99.105/NumberPanel",
         "ajax": "/ints/agent/res/data_smscdr.php",
         "login_page": "/ints/login",
         "login_post": "/ints/signin",
-        "username": "BODYELYOUTUBER",
-        "password": "BODY EL YOUTUBER",
+        "username": "Junaidniz786",
+        "password": "Junaidniz786",
         "session": requests.Session(),
         "logged": False
     }
