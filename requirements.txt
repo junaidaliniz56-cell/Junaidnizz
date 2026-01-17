@@ -1,4 +1,4 @@
-aiogram
-requests
-phonenumbers
+python-telegram-bot==20.8
+cloudscraper
 beautifulsoup4
+lxml
