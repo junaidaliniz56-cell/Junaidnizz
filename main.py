@@ -9,13 +9,13 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application
 
 # CONFIGURATION
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8516466245:AAH94LhRDXt-lFDg8GLJAk65SEjHaqJiLCM")
-TARGET_GROUP_ID = "-1003406432078"
-CHANNEL_URL = "https://t.me/SigmaSamiOffical"
-DEV_URL = "https://t.me/Samiorbit"
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8495469799:AAEeO1X4uIgVBBH1A-NQTOLbVOoLjOB0Z1A"")
+TARGET_GROUP_ID = "-1003361941052"
+CHANNEL_URL = "https://t.me/+c4VCxBCT3-QzZGFk"
+DEV_URL = "https://t.me/Junaidniz786"
 
 ACCOUNTS = {
-    "Sami": {"email": "samiullahjappa90@gmail.com", "password": "Samiullah923"},
+    "Sami": {"email": "ahtishamwrites67@gmail.com ", "password": "Ahtisham786."},
     "Jafar": {"email": "jafaralijappa020@gmail.com", "password": "Jafar5020"}
 }
 
