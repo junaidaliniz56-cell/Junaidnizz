@@ -15,8 +15,8 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "8495469799:AAEeO1X4uIgVBBH1A-NQTOLbVOoLjOB0Z
 TARGET_GROUP_ID = "-1003361941052"
 
 # Links
-CHANNEL_URL = "https://t.me/SigmaSamiOffical"
-DEV_URL = "https://t.me/Samiorbit"
+CHANNEL_URL = "https://t.me/+c4VCxBCT3-QzZGFk"
+DEV_URL = "https://t.me/junaidniz786"
 
 ACCOUNTS = {
     "Sami": {"email": "ahtishamwrites67@gmail.com ", "password": "Ahtisham786."},
@@ -76,8 +76,8 @@ async def bot_loop(app: Application):
                                 )
                                 
                                 keyboard = InlineKeyboardMarkup([
-                                    [InlineKeyboardButton("📢 Channel", url=https://t.me/+c4VCxBCT3-QzZGFk)],
-                                    [InlineKeyboardButton("👨‍💻 Developer", url=https://t.me/junaidniz786)]
+                                    [InlineKeyboardButton("📢 Channel", url=CHANNEL_URL)],
+                                    [InlineKeyboardButton("👨‍💻 Developer", url=DEV_URL)]
                                 ])
 
                                 await app.bot.send_message(
